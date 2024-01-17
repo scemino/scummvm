@@ -333,7 +333,7 @@ static SQInteger actorInWalkbox(HSQUIRRELVM v) {
 	Common::String name;
 	if (SQ_FAILED(sqget(v, 3, name)))
 		return sq_throwerror(v, "failed to get name");
-	for (int i = 0; i < g_engine->_room->_walkboxes.size(); i++) {
+	for (int i = 0; i < (int)g_engine->_room->_walkboxes.size(); i++) {
 		const Walkbox &walkbox = g_engine->_room->_walkboxes[i];
 		if (walkbox._name == name) {
 			if (walkbox.contains(actor->_node->getAbsPos())) {
@@ -754,8 +754,8 @@ static SQInteger actorWalkTo(HSQUIRRELVM v) {
 		if (SQ_FAILED(sqget(v, 4, y)))
 			return sq_throwerror(v, "failed to get y");
 		Facing *facing = nullptr;
+		int dir;
 		if (nArgs == 5) {
-			int dir;
 			if (SQ_FAILED(sqget(v, 5, dir)))
 				return sq_throwerror(v, "failed to get dir");
 			facing = (Facing *)&dir;
@@ -933,7 +933,7 @@ static SQInteger is_actor(HSQUIRRELVM v) {
 // See also masterRoomArray.
 static SQInteger masterActorArray(HSQUIRRELVM v) {
 	sq_newarray(v, 0);
-	for (int i = 0; i < g_engine->_actors.size(); i++) {
+	for (int i = 0; i < (int)g_engine->_actors.size(); i++) {
 		Object *actor = g_engine->_actors[i];
 		sqpush(v, actor->_table);
 		sq_arrayappend(v, -2);

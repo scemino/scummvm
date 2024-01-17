@@ -41,6 +41,7 @@ Facing flip(Facing facing) {
 	switch (facing) {
 	case FACE_BACK:
 		return FACE_FRONT;
+	default:
 	case FACE_FRONT:
 		return FACE_BACK;
 	case FACE_LEFT:
@@ -160,7 +161,7 @@ Common::String join(const Common::Array<Common::String> &array, const Common::St
 	Common::String result;
 	if (array.size() > 0) {
 		result += array[0];
-		for (int i = 1; i < array.size(); i++) {
+		for (int i = 1; i < (int)array.size(); i++) {
 			result += (sep + array[i]);
 		}
 	}

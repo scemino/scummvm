@@ -27,7 +27,7 @@
 namespace Twp {
 
 static Object *actor(const Common::String &key) {
-	for (int i = 0; i < g_engine->_actors.size(); i++) {
+	for (int i = 0; i < (int)g_engine->_actors.size(); i++) {
 		Object *a = g_engine->_actors[i];
 		if (a->_key == key)
 			return a;
@@ -56,18 +56,18 @@ static DialogConditionMode parseMode(char mode) {
 static DialogConditionState parseState(Common::String &dialog) {
 	Common::String dialogName;
 	int i = 1;
-	while (i < dialog.size() && !Common::isDigit(dialog[i])) {
+	while (i < (int)dialog.size() && !Common::isDigit(dialog[i])) {
 		dialogName += dialog[i];
 		i++;
 	}
 
-	while (!g_engine->_pack.assetExists((dialogName + ".byack").c_str()) && (i < dialog.size())) {
+	while (!g_engine->_pack.assetExists((dialogName + ".byack").c_str()) && (i < (int)dialog.size())) {
 		dialogName += dialog[i];
 		i++;
 	}
 
 	Common::String num;
-	while ((i < dialog.size()) && Common::isDigit(dialog[i])) {
+	while ((i < (int)dialog.size()) && Common::isDigit(dialog[i])) {
 		num += dialog[i];
 		i++;
 	}
@@ -81,7 +81,7 @@ static DialogConditionState parseState(Common::String &dialog) {
 }
 
 static Room *room(const Common::String &name) {
-	for (int i = 0; i < g_engine->_rooms.size(); i++) {
+	for (int i = 0; i < (int)g_engine->_rooms.size(); i++) {
 		Room *room = g_engine->_rooms[i];
 		if (room->_name == name) {
 			return room;
@@ -91,9 +91,9 @@ static Room *room(const Common::String &name) {
 }
 
 static Object *object(Room *room, const Common::String &key) {
-	for (int i = 0; i < room->_layers.size(); i++) {
+	for (int i = 0; i < (int)room->_layers.size(); i++) {
 		Layer *layer = room->_layers[i];
-		for (int j = 0; j < layer->_objects.size(); j++) {
+		for (int j = 0; j < (int)layer->_objects.size(); j++) {
 			Object *o = layer->_objects[j];
 			if (o->_key == key)
 				return o;
@@ -103,11 +103,11 @@ static Object *object(Room *room, const Common::String &key) {
 }
 
 static Object *object(const Common::String &key) {
-	for (int i = 0; i < g_engine->_rooms.size(); i++) {
+	for (int i = 0; i < (int)g_engine->_rooms.size(); i++) {
 		Room *room = g_engine->_rooms[i];
-		for (int j = 0; j < room->_layers.size(); j++) {
+		for (int j = 0; j < (int)room->_layers.size(); j++) {
 			Layer *layer = room->_layers[j];
-			for (int k = 0; k < layer->_objects.size(); k++) {
+			for (int k = 0; k < (int)layer->_objects.size(); k++) {
 				Object *o = layer->_objects[k];
 				if (o->_key == key)
 					return o;
@@ -137,7 +137,7 @@ static void toSquirrel(const Common::JSONValue *json, HSQOBJECT &obj) {
 	} else if (json->isArray()) {
 		sq_newarray(v, 0);
 		const Common::JSONArray &jArr = json->asArray();
-		for (int i = 0; i < jArr.size(); i++) {
+		for (int i = 0; i < (int)jArr.size(); i++) {
 			HSQOBJECT tmp;
 			toSquirrel(jArr[i], tmp);
 			sqpush(v, tmp);
@@ -356,7 +356,7 @@ static void loadRoom(Room *room, const Common::JSONObject &json) {
 }
 
 static void setActor(const Common::String &key) {
-	for (int i = 0; i < g_engine->_actors.size(); i++) {
+	for (int i = 0; i < (int)g_engine->_actors.size(); i++) {
 		Object *a = g_engine->_actors[i];
 		if (a->_key == key) {
 			g_engine->setActor(a, false);
@@ -438,7 +438,7 @@ void SaveGameManager::loadGameScene(const Common::JSONObject &json) {
 	g_engine->_actorSwitcher._mode = mode;
 	// TODO: tmpPrefs().forceTalkieText = json["forceTalkieText"].getInt() != 0;
 	const Common::JSONArray &jSelectableActors = json["selectableActors"]->asArray();
-	for (int i = 0; i < jSelectableActors.size(); i++) {
+	for (int i = 0; i < (int)jSelectableActors.size(); i++) {
 		const Common::JSONObject &jSelectableActor = jSelectableActors[i]->asObject();
 		Object *act = jSelectableActor.contains("_actorKey") ? actor(jSelectableActor["_actorKey"]->asString()) : nullptr;
 		g_engine->_hud._actorSlots[i].actor = act;
@@ -471,7 +471,7 @@ void SaveGameManager::loadCallbacks(const Common::JSONObject &json) {
 	g_engine->_callbacks.clear();
 	if (!json["callbacks"]->isNull()) {
 		const Common::JSONArray &jCallbacks = json["callbacks"]->asArray();
-		for (int i = 0; i < jCallbacks.size(); i++) {
+		for (int i = 0; i < (int)jCallbacks.size(); i++) {
 			const Common::JSONObject &jCallBackHash = jCallbacks[i]->asObject();
 			int id = jCallBackHash["guid"]->asIntegerNumber();
 			float time = ((float)jCallBackHash["time"]->asIntegerNumber()) / 1000.f;
@@ -502,7 +502,7 @@ void SaveGameManager::loadGlobals(const Common::JSONObject &json) {
 }
 
 void SaveGameManager::loadActors(const Common::JSONObject &json) {
-	for (int i = 0; i < g_engine->_actors.size(); i++) {
+	for (int i = 0; i < (int)g_engine->_actors.size(); i++) {
 		Object *a = g_engine->_actors[i];
 		if (a->_key.size() > 0) {
 			loadActor(a, json[a->_key]->asObject());
@@ -522,7 +522,7 @@ void SaveGameManager::loadInventory(const Common::JSONValue *json) {
 				if (jSlot.contains("objects")) {
 					if (jSlot["objects"]->isArray()) {
 						const Common::JSONArray &jSlotObjects = jSlot["objects"]->asArray();
-						for (int j = 0; j < jSlotObjects.size(); j++) {
+						for (int j = 0; j < (int)jSlotObjects.size(); j++) {
 							const Common::JSONValue *jObj = jSlotObjects[j];
 							Object *obj = object(jObj->asString());
 							if (!obj)

@@ -79,7 +79,7 @@ const Node *Node::getRoot() const {
 }
 
 int Node::find(Node *other) {
-	for (int i = 0; i < _children.size(); i++) {
+	for (int i = 0; i < (int)_children.size(); i++) {
 		if (_children[i] == other) {
 			return i;
 		}
@@ -96,7 +96,7 @@ void Node::removeChild(Node *child) {
 void Node::clear() {
 	if (_children.size() > 0) {
 		Common::Array<Node *> children(_children);
-		for (int i = 0; i < children.size(); i++) {
+		for (int i = 0; i < (int)children.size(); i++) {
 			children[i]->remove();
 		}
 	}
@@ -139,7 +139,7 @@ void Node::updateColor(Color parentColor) {
 	_computedColor.rgba.g = _color.rgba.g * parentColor.rgba.g;
 	_computedColor.rgba.b = _color.rgba.b * parentColor.rgba.b;
 	onColorUpdated(_computedColor);
-	for (int i = 0; i < _children.size(); i++) {
+	for (int i = 0; i < (int)_children.size(); i++) {
 		Node *child = _children[i];
 		child->updateColor(_computedColor);
 	}
@@ -148,7 +148,7 @@ void Node::updateColor(Color parentColor) {
 void Node::updateAlpha(float parentAlpha) {
 	_computedColor.rgba.a = _color.rgba.a * parentAlpha;
 	onColorUpdated(_computedColor);
-	for (int i = 0; i < _children.size(); i++) {
+	for (int i = 0; i < (int)_children.size(); i++) {
 		Node *child = _children[i];
 		child->updateAlpha(_computedColor.rgba.a);
 	}
@@ -187,7 +187,7 @@ void Node::draw(Math::Matrix4 parent) {
 		Common::Array<Node *> children(_children);
 		Common::sort(children.begin(), children.end(), cmpNodes);
 		drawCore(myTrsf);
-		for (int i = 0; i < children.size(); i++) {
+		for (int i = 0; i < (int)children.size(); i++) {
 			Node *child = children[i];
 			child->draw(trsf);
 		}
@@ -245,7 +245,7 @@ void ParallaxNode::drawCore(Math::Matrix4 trsf) {
 	Texture *texture = g_engine->_resManager.texture(sheet->meta.image);
 	Math::Matrix4 t = trsf;
 	float x = 0.f;
-	for (int i = 0; i < _frames.size(); i++) {
+	for (int i = 0; i < (int)_frames.size(); i++) {
 		const SpriteSheetFrame &frame = sheet->frameTable[_frames[i]];
 		Math::Matrix4 myTrsf = t;
 		myTrsf.translate(Math::Vector3d(x + frame.spriteSourceSize.left, frame.sourceSize.getY() - frame.spriteSourceSize.height() - frame.spriteSourceSize.top, 0.0f));
@@ -278,7 +278,7 @@ void Anim::setAnim(const ObjectAnimation *anim, float fps, bool loop, bool insta
 	if(_obj) setVisible(Twp::find(_obj->_hiddenLayers, _anim->name) == -1);
 
 	clear();
-	for (int i = 0; i < _anim->layers.size(); i++) {
+	for (int i = 0; i < (int)_anim->layers.size(); i++) {
 		const ObjectAnimation &layer = _anim->layers[i];
 		Anim *node = new Anim(_obj);
 		node->setAnim(&layer, fps, loop, instant);
@@ -287,7 +287,7 @@ void Anim::setAnim(const ObjectAnimation *anim, float fps, bool loop, bool insta
 }
 
 void Anim::trigSound() {
-	if ((_anim->triggers.size() > 0) && _frameIndex < _anim->triggers.size()) {
+	if ((_anim->triggers.size() > 0) && _frameIndex < (int)_anim->triggers.size()) {
 		const Common::String &trigger = _anim->triggers[_frameIndex];
 		if ((trigger.size() > 0) && trigger != "null") {
 			_obj->trig(trigger);
@@ -304,7 +304,7 @@ void Anim::update(float elapsed) {
 		_elapsed += elapsed;
 		if (_elapsed > _frameDuration) {
 			_elapsed = 0;
-			if (_frameIndex < _frames.size() - 1) {
+			if (_frameIndex < (int)_frames.size() - 1) {
 				_frameIndex++;
 				trigSound();
 			} else if (_loop) {
@@ -315,7 +315,7 @@ void Anim::update(float elapsed) {
 			}
 		}
 		if (_anim->offsets.size() > 0) {
-			Math::Vector2d off = _frameIndex < _anim->offsets.size() ? _anim->offsets[_frameIndex] : Math::Vector2d();
+			Math::Vector2d off = _frameIndex < (int)_anim->offsets.size() ? _anim->offsets[_frameIndex] : Math::Vector2d();
 			if (_obj->getFacing() == FACE_LEFT) {
 				off.setX(-off.getX());
 			}
@@ -323,7 +323,7 @@ void Anim::update(float elapsed) {
 		}
 	} else if (_children.size() != 0) {
 		bool disabled = true;
-		for (int i = 0; i < _children.size(); i++) {
+		for (int i = 0; i < (int)_children.size(); i++) {
 			Anim *layer = static_cast<Anim *>(_children[i]);
 			layer->update(elapsed);
 			disabled = disabled && layer->_disabled;
@@ -337,7 +337,7 @@ void Anim::update(float elapsed) {
 }
 
 void Anim::drawCore(Math::Matrix4 trsf) {
-	if (_frameIndex < _frames.size()) {
+	if (_frameIndex < (int)_frames.size()) {
 		const Common::String &frame = _frames[_frameIndex];
 		bool flipX = _obj->getFacing() == FACE_LEFT;
 		if (_sheet.size() == 0) {
@@ -497,7 +497,7 @@ static bool hasUpArrow(Object *actor) {
 }
 
 static bool hasDownArrow(Object *actor) {
-	return actor->_inventory.size() > (actor->_inventoryOffset * NUMOBJECTSBYROW + NUMOBJECTS);
+	return (int)actor->_inventory.size() > (actor->_inventoryOffset * NUMOBJECTSBYROW + NUMOBJECTS);
 }
 
 Inventory::Inventory() : Node("Inventory") {
@@ -624,13 +624,13 @@ void Inventory::update(float elapsed, Object *actor, Color backColor, Color verb
 			const Common::Rect &item = _itemRects[i];
 			if (item.contains(scrPos.getX(), scrPos.getY())) {
 				int index = _actor->_inventoryOffset * NUMOBJECTSBYROW + i;
-				if (index < _actor->_inventory.size())
+				if (index < (int)_actor->_inventory.size())
 					_obj = _actor->_inventory[index];
 				break;
 			}
 		}
 
-		for (int i = 0; i < _actor->_inventory.size(); i++) {
+		for (int i = 0; i < (int)_actor->_inventory.size(); i++) {
 			Object *obj = _actor->_inventory[i];
 			obj->update(elapsed);
 		}
@@ -736,9 +736,9 @@ void HotspotMarkerNode::drawCore(Math::Matrix4 trsf) {
 	Texture *texture = g_engine->_resManager.texture(gameSheet->meta.image);
 	SpriteSheetFrame *frame = &gameSheet->frameTable["hotspot_marker"];
 	Color color = Color::create(255, 165, 0);
-	for (int i = 0; i < g_engine->_room->_layers.size(); i++) {
+	for (int i = 0; i < (int)g_engine->_room->_layers.size(); i++) {
 		Layer *layer = g_engine->_room->_layers[i];
-		for (int j = 0; j < layer->_objects.size(); j++) {
+		for (int j = 0; j < (int)layer->_objects.size(); j++) {
 			Object *obj = layer->_objects[j];
 			if (isObject(obj->getId()) && (obj->_objType == otNone) && obj->isTouchable()) {
 				Math::Vector2d pos = g_engine->roomToScreen(obj->_node->getAbsPos());

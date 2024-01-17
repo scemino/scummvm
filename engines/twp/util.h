@@ -60,7 +60,7 @@ void parseObjectAnimations(const Common::JSONArray &jAnims, Common::Array<Object
 // array util
 template<typename T>
 int find(const Common::Array<T>& array, const T& o) {
-	for (int i = 0; i < array.size(); i++) {
+	for (int i = 0; i < (int)array.size(); i++) {
 		if (array[i] == o) {
 			return i;
 		}

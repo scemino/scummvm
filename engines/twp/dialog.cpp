@@ -197,7 +197,7 @@ void Dialog::choose(int choice) {
 void Dialog::choose(DialogSlot *slot) {
 	if (slot && slot->_isValid) {
 		sqcall("onChoiceClick");
-		for (int i = 0; i < slot->_stmt->_conds.size(); i++) {
+		for (int i = 0; i < (int)slot->_stmt->_conds.size(); i++) {
 			YCond *cond = slot->_stmt->_conds[i];
 			CondStateVisitor v(slot->_dlg, DialogSelMode::Choose);
 			cond->accept(v);
@@ -216,7 +216,10 @@ void Dialog::choose(DialogSlot *slot) {
 }
 
 void Dialog::start(const Common::String &actor, const Common::String &name, const Common::String &node) {
-	_context = DialogContext{.actor = actor, .dialogName = name, .parrot = true, .limit = MAXCHOICES};
+	_context.actor = actor;
+	_context.dialogName = name;
+	_context.parrot = true;
+	_context.limit = MAXCHOICES;
 	// keepIf(self.states, proc(x: DialogConditionState): bool = x.mode != TempOnce);
 	Common::String path = name + ".byack";
 	debug("start dialog %s", path.c_str());
@@ -349,7 +352,7 @@ void Dialog::selectLabel(int line, const Common::String &name) {
 void Dialog::gotoNextLabel() {
 	if (_lbl) {
 		int i = Twp::find(_cu->_labels, _lbl);
-		if ((i != -1) && (i != _cu->_labels.size() - 1)) {
+		if ((i != -1) && (i != (int)_cu->_labels.size() - 1)) {
 			YLabel *label = _cu->_labels[i + 1];
 			selectLabel(label->_line, label->_name);
 		} else {
@@ -400,11 +403,11 @@ void Dialog::running(float dt) {
 		_action->update(dt);
 	else if (!_lbl)
 		_state = None;
-	else if (_currentStatement == _lbl->_stmts.size())
+	else if (_currentStatement == (int)_lbl->_stmts.size())
 		gotoNextLabel();
 	else {
 		_state = Active;
-		while (_lbl && (_currentStatement < _lbl->_stmts.size()) && (_state == Active)) {
+		while (_lbl && (_currentStatement < (int)_lbl->_stmts.size()) && (_state == Active)) {
 			YStatement *statmt = _lbl->_stmts[_currentStatement];
 			IsChoice isChoice;
 			statmt->_exp->accept(isChoice);
@@ -420,7 +423,7 @@ void Dialog::running(float dt) {
 				return;
 			} else {
 				run(statmt);
-				if (_lbl && (_currentStatement == _lbl->_stmts.size()))
+				if (_lbl && (_currentStatement == (int)_lbl->_stmts.size()))
 					gotoNextLabel();
 			}
 		}

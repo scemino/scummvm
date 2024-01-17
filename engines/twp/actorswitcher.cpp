@@ -32,12 +32,12 @@
 
 namespace Twp {
 
-ActorSwitcherSlot::ActorSwitcherSlot(const Common::String &icon, Color back, Color frame, SelectFunc *selectFunc, int id) {
-	this->icon = icon;
-	this->back = back;
-	this->frame = frame;
-	this->selectFunc = selectFunc;
-	this->id = id;
+ActorSwitcherSlot::ActorSwitcherSlot(const Common::String &icon_, Color back_, Color frame_, SelectFunc *selectFunc_, int id_) {
+	this->icon = icon_;
+	this->back = back_;
+	this->frame = frame_;
+	this->selectFunc = selectFunc_;
+	this->id = id_;
 }
 
 void ActorSwitcherSlot::select() {
@@ -60,7 +60,7 @@ Math::Matrix4 ActorSwitcher::transform(Math::Matrix4 trsf, int index) {
 }
 
 float ActorSwitcher::getAlpha(int index) const {
-	if (index == (_slots.size() - 1))
+	if (index == ((int)_slots.size() - 1))
 		return ENABLE_ALPHA;
 	if (_mode & asTemporaryUnselectable)
 		return INACTIVE_ALPHA;
@@ -85,7 +85,7 @@ void ActorSwitcher::drawIcon(const Common::String &icon, Color backColor, Color 
 
 void ActorSwitcher::drawCore(Math::Matrix4 trsf) {
 	if (_mouseOver) {
-		for (int i = 0; i < _slots.size(); i++) {
+		for (int i = 0; i < (int)_slots.size(); i++) {
 			ActorSwitcherSlot &slot = _slots[i];
 			drawIcon(slot.icon, slot.back, slot.frame, trsf, i);
 		}
@@ -153,7 +153,7 @@ void ActorSwitcher::update(const Common::Array<ActorSwitcherSlot> &slots, float 
 			_down = true;
 			// check if we allow to select an actor
 			int iconIdx = iconIndex(scrPos);
-			if ((_mode & asOn) || (iconIdx == (_slots.size() - 1))) {
+			if ((_mode & asOn) || (iconIdx == ((int)_slots.size() - 1))) {
 				if (_slots[iconIdx].selectFunc != nullptr)
 					_slots[iconIdx].select();
 			}

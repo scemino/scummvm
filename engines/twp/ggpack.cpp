@@ -418,7 +418,7 @@ Common::JSONValue *GGHashMapDecoder::readArray() {
 		error("trying to parse a non-array");
 	Common::JSONArray arr;
 	uint32 length = _stream->readUint32LE();
-	for (int i = 0; i < length; i++) {
+	for (uint32 i = 0; i < length; i++) {
 		Common::JSONValue *item = readValue();
 		arr.push_back(item);
 	}
@@ -435,7 +435,7 @@ Common::JSONValue *GGHashMapDecoder::readHash() {
 		error("trying to parse a non-hash: %d", c);
 	}
 	uint32 nPairs = _stream->readUint32LE();
-	for (int i = 0; i < nPairs; i++) {
+	for (uint32 i = 0; i < nPairs; i++) {
 		Common::String key = readString(_stream->readUint32LE());
 		obj[key] = readValue();
 	}
@@ -456,7 +456,8 @@ Common::JSONValue *GGHashMapDecoder::open(Common::SeekableReadStream *s) {
 		return nullptr;
 	}
 	_stream = s;
-	(void)s->readUint32LE();
+	/*uint32 numEntries =*/ (void)s->readUint32LE();
+
 	if (!_readPlo(s, _offsets))
 		return nullptr;
 	return readHash();
@@ -553,7 +554,7 @@ uint32 XorStream::read(void *dataPtr, uint32 dataSize) {
 	int p = (int)pos();
 	uint32 result = _s->read(dataPtr, dataSize);
 	char *buf = (char *)dataPtr;
-	for (int i = 0; i < dataSize; i++) {
+	for (uint32 i = 0; i < dataSize; i++) {
 		int x = buf[i] ^ _key.magicBytes[p & 0x0F] ^ (i * _key.multiplier);
 		buf[i] = (char)(x ^ _previous);
 		_previous = x;
@@ -642,7 +643,7 @@ bool GGPackEntryReader::open(GGPackDecoder &pack, const Common::String &entry) {
 }
 
 bool GGPackEntryReader::open(GGPackSet &packs, const Common::String &entry) {
-	for (int i = 0; i < packs._packs.size(); i++) {
+	for (int i = 0; i < (int)packs._packs.size(); i++) {
 		GGPackDecoder *pack = &packs._packs[i];
 		if (open(*pack, entry))
 			return true;
@@ -725,7 +726,7 @@ void GGPackSet::init() {
 }
 
 bool GGPackSet::assetExists(const char *asset) {
-	for (int i = 0; i < _packs.size(); i++) {
+	for (int i = 0; i < (int)_packs.size(); i++) {
 		GGPackDecoder *pack = &_packs[i];
 		if (pack->assetExists(asset))
 			return true;
