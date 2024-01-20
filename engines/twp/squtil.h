@@ -23,7 +23,7 @@
 #define TWP_SQUTIL_H
 
 #include "squirrel/squirrel.h"
-#include "utility" // FIXME: Remove usage of standard library i.e. std:: prefixed and replace with Common alternatives
+#include "common/util.h"
 #include "common/str.h"
 #include "twp/twp.h"
 #include "twp/vm.h"
@@ -177,7 +177,7 @@ void sqcall(HSQUIRRELVM v, HSQOBJECT o, const char *name, T... args) {
 
 	sq_pushobject(v, o);
 	if (n > 0) {
-		sqpush(v, std::forward<T>(args)...);
+		sqpush(v, Common::forward<T>(args)...);
 	}
 	sq_call(v, 1 + n, SQFalse, SQTrue);
 	sq_settop(v, top);
@@ -192,7 +192,7 @@ void sqcall(HSQOBJECT o, const char *name, T... args) {
 
 	sq_pushobject(v, o);
 	if (n > 0) {
-		sqpush(v, std::forward<T>(args)...);
+		sqpush(v, Common::forward<T>(args)...);
 	}
 	sq_call(v, 1 + n, SQFalse, SQTrue);
 	sq_settop(v, top);
@@ -208,7 +208,7 @@ void sqcall(const char *name, T... args) {
 
 	sq_pushobject(v, o);
 	if (n > 0) {
-		sqpush(v, std::forward<T>(args)...);
+		sqpush(v, Common::forward<T>(args)...);
 	}
 	sq_call(v, 1 + n, SQFalse, SQTrue);
 	sq_settop(v, top);
@@ -229,7 +229,7 @@ void sqcallfunc(TResult &result, HSQOBJECT o, const char *name, T... args) {
 	sq_remove(v, -2);
 
 	sqpush(v, o);
-	sqpush(v, std::forward<T>(args)...);
+	sqpush(v, Common::forward<T>(args)...);
 	if (SQ_FAILED(sq_call(v, n + 1, SQTrue, SQTrue))) {
 		// sqstd_printcallstack(v);
 		sq_settop(v, top);
@@ -256,7 +256,7 @@ void sqcallfunc(TResult &result, const char *name, T... args) {
 	sq_remove(v, -2);
 
 	sqpush(v, o);
-	sqpush(v, std::forward<T>(args)...);
+	sqpush(v, Common::forward<T>(args)...);
 	if (SQ_FAILED(sq_call(v, n + 1, SQTrue, SQTrue))) {
 		// sqstd_printcallstack(v);
 		sq_settop(v, top);
