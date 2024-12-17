@@ -510,5 +510,20 @@ MODULE_OBJS += \
 endif
 endif
 
+ifdef USE_SDL3
+ifdef USE_IMGUI
+ifdef USE_OPENGL
+MODULE_OBJS += \
+	imgui/backends/imgui_impl_opengl3.o
+endif
+ifdef USE_IMGUI_SDLRENDERER3
+MODULE_OBJS += \
+	imgui/backends/imgui_impl_sdlrenderer3.o
+endif
+MODULE_OBJS += \
+	imgui/backends/imgui_impl_sdl3.o
+endif
+endif
+
 # Include common rules
 include $(srcdir)/rules.mk
